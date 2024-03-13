@@ -1,212 +1,263 @@
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/lNi1l-0e)
 # Uppgift 9 - Skapa CLI-verktyget "greppo" för textfiltrering
 
-## <a name='Syfte'></a>Syfte
+# Syfte
 
-Syftet med den här uppgiften är att ge praktisk erfarenhet av att utveckla ett
-kommandoradsverktyg i Python som hanterar filinläsning, textbearbetning, och
-avancerad argumenthantering, vilket förbereder för skapandet av effektiva och
-användarvänliga skript och verktyg för dataanalys och automatisering.
+I den här uppgiften kommer du att skapa ett terminalverktyg med Python. Du
+kommer att lära dig hur man läser filer, bearbetar text och använder `argparse`
+för att hantera kommandoradsparametrar. Det här är användbart för att skapa
+program som hjälper till med dataanalys och automatisering.
 
-<!-- vscode-markdown-toc -->
+# Inför uppgiften
 
-- [Syfte](#Syfte)
-- [Förberedelser](#Frberedelser)
-  - [Förberedelser](#Frberedelser-1)
-- [Beskrivning](#Beskrivning)
-  - [Detaljer](#Detaljer)
-    - [Tekniska Krav:](#TekniskaKrav:)
-    - [greppo.py](#greppo.py)
-    - [greppo_logic.py](#greppo_logic.py)
-    - [Exempel](#Exempel)
-  - [Inlämningsinstruktioner](#Inlmningsinstruktioner)
-- [Anteckningar](#Anteckningar)
+För att bli redo att lösa uppgiften bör du lära dig följande:
 
-<!-- vscode-markdown-toc-config
-	numbering=false
-	autoSave=true
-	/vscode-markdown-toc-config -->
-<!-- /vscode-markdown-toc -->
+1. Läsa in filer
 
-## <a name='Frberedelser'></a>Förberedelser
+   - Lär dig hantera filer i Python. Det inkluderar att öppna en fil, läsa
+     innehållet rad för rad och sedan stänga filen. Python-dokumentationen har
+     avsnitt om filhantering som är bra att börja med.
 
-### <a name='Frberedelser-1'></a>Förberedelser
+2. Söka i strängar
 
-Innan du börjar med uppgiften bör du fokusera på följande tre viktiga
-förberedelser:
+   - Bekanta dig med hur man söker efter specifika ord eller fraser inom
+     strängar i Python. Det finns flera metoder för detta, inklusive användning
+     av `in`-operatorn, reguljära uttryck eller strängmetoder som `find()` och
+     `index()`.
 
-1. **Förståelse för filhantering**: Bekanta dig med hur man [öppnar, läser, och hanterar filer](https://docs.python.org/3/tutorial/inputoutput.html#tut-files)
-   i Python. Detta är en grundläggande färdighet för uppgiften eftersom du
-   kommer att behöva läsa innehållet i en eller flera filer för att söka efter
-   specifika textsträngar. Se till att du förstår hur man använder
-   `open`-funktionen och kontextmanagers (`with`-satsen) för att effektivt
-   hantera filer.
+3. Använda argparse
+   - Argparse är ett bibliotek i Python för att hantera kommandoradsargument.
+     Det gör det möjligt att skapa användarvänliga kommandoradsgränssnitt, och
+     det är centralt för ditt skript. Gå igenom den officiella dokumentationen
+     och Argparse-tutorialen för att förstå hur du definierar argument, hur du
+     läser in dessa argument i ditt program, och hur du använder dem.
 
-2. **Bli bekant med argparse-modulen**: Eftersom ditt CLI-verktyg kommer att ta
-   emot argument och flaggor från användaren, är det viktigt att du förstår hur
-   man använder [`argparse`-modulen](https://docs.python.org/3/library/argparse.html) för att tolka dessa kommandoradsargument. Gå igenom [Argparse Tutorial](https://docs.python.org/3/howto/argparse.html)
-   eller åtminstone läs igenom den övergripande dokumentationen för att få en
-   bra överblick över hur man definierar argument, hur man skapar en parser, och
-   hur man hämtar argumentvärdena i ditt program.
+Att ha en god förståelse för dessa områden kommer att ge dig ett bra utgångsläge
+för att lösa uppgiften. Använd Python Library Reference och de officiella
+tutorialsen för att lära dig mer om dessa ämnen.
 
-3. **Grundläggande kunskap om strängmanipulation och sökning**: Eftersom
-   uppgiften innebär att söka efter och eventuellt modifiera textsträngar, är
-   det viktigt att du är bekväm med strängmanipulation i Python. Detta
-   inkluderar att veta hur man utför operationer som att söka efter substrängar,
-   jämföra strängar, och använda strängmetoder för att bearbeta text.
+# Beskrivning
 
-Genom att fokusera på dessa tre förberedelser kommer du att lägga en stark grund
-för att framgångsrikt slutföra uppgiften och skapa ett användbart och effektivt
-CLI-verktyg.
+Skapa ett CLI verktyg vid namn `greppo.py` för att söka efter textsträngar i
+filer.
 
-## <a name='Beskrivning'></a>Beskrivning
+## Skriptet `greppo.py`
 
-Skapa CLI-verktyget greppo för att söka efter textsträngar i filer. Användare
-specificerar söksträngar och filer, och greppo visar matchande rader.
+### Argument
 
-### <a name='Detaljer'></a>Detaljer
+- Positionella argument
+  - Ett eller flera filnamn
+- Optioner
+  - `--search S` ger träff på strängen `S` i filerna. Optionen kan ges flera
+    gånger och ger då träffar på alla söksträngarna.
+  - `-n` eller `--line-number` visar radnummer för varje träff enligt formatet:
+    `filnamn:R:T` där `R` är radnumret och `T` radens innehåll.
+  - `-v` eller `--invert-match` inverterar sökningen så att träffar istället ges
+    för de rader som inte matchar någon söksträng.
+  - `-q`, `--quiet`, eller `--silent` stänger av utskrifter, men fortfarande ges
+    exit code.
 
-Kommandots utskrifter när det skriver ut något ska motsvara hur `grep -Hv`
-fungerar. Det är sådana utskrifter i exemplen som följer.
+### Utskrift
 
-#### <a name='TekniskaKrav:'></a>Tekniska Krav:
+Den enda utskrift som ges är för träffar är enligt formatet `F:R:T` där `F` är
+filnamnet, `R` är radnumret om flaggan för radnummer angavs och `T` radens
+innehåll. Förutom detta så skrivs ingen ut alls.
 
-1. **Argumenthantering med argparse**: Använd `argparse`-modulen för att hantera
-   kommandoradsargument.
-2. **Funktionsuppdelning**: Dela upp programmet i två filer: `greppo.py` för
-   kommandoradsinterfacing och `greppo_logic.py` för själva söklogiken.
+Om flaggan för att stänga av utskrifter angavs så ska inget skrivas ut.
 
-#### <a name='greppo.py'></a>greppo.py
+### Exit code
 
-- Filen `greppo.py` ska hantera användarinput och skriva ut resultatet av
-  sökningen.
-- Använd `argparse` för att tolka följande argument:
-  - Filnamn (en eller flera).
-  - `--search` för söksträngar, kan anges flera gånger.
-  - `-n` eller `--line-number` för att inkludera radnummer i utskriften.
-  - `-v` eller `--invert-match` för att invertera sökningen (matcha rader som
-    inte innehåller söksträngarna).
-  - `-q`, `--quiet`, eller `--silent` för att undertrycka utskrift (endast
-    exitkod).
-- Funktionen `main` ska samla argumenten och anropa en funktion från
-  `greppo_logic.py` med dessa.
+`0` om sökningen gav någon träff, annars `1`.
 
-#### <a name='greppo_logic.py'></a>greppo_logic.py
+### Exempel
 
-- Skapa en funktion `greppo_logic(search_terms, filenames, invert_match, show_linenumbers)`:
+```bash
+$ cat filnamn1
+one
+two
+three
+four
+five
+$ cat filnamn2
+boat
+car
+airplane
+helicopter
+rocket
+$ python greppo.py --search one --search two filnamn1
+filnamn1:one
+filnamn1:two
+$ python greppo.py --search o filnamn1
+filnamn1:one
+filnamn1:two
+filnamn1:four
+$ python greppo.py --search o -n filnamn2
+filnamn2:1:boat
+filnamn2:4:helicopter
+filnamn2:5:rocket
+$ python greppo.py --search e -nv filnamn1 filnamn2
+filnamn1:2:two
+filnamn1:4:four
+filnamn2:1:boat
+filnamn2:2:car
+```
+
+## Använd de två filerna `greppo.py` och `greppo_logic.py`
+
+Verktyget delas upp i två delar för att hålla kodstrukturen klar och tydlig:
+skriptfilen `greppo.py` och modulen `greppo_logic.py`.
+
+`greppo.py` är huvudfilen som användaren interagerar med. Den använder
+`argparse` för att tolka och hantera användarinput i form av
+kommandoradsparametrar. Dess detaljär är beskrivna ovan. Huvudsyftet med filen
+är att fungera som en bro mellan användaren och programmets logik, utan att
+själv dyka ner i detaljerna av textbearbetningen.
+
+`greppo_logic.py` innehåller logiken för greppo och är fokuserad på att
+genomföra de specifika uppgifterna. Det är där texten i filerna söks igenom
+utifrån de olika och resultatraderna genereras. Den är oberoende av hur
+programmet körs, vilket gör det möjligt att återanvända koden i olika
+sammanhang. Dess detaljer är beskrivna nedan.
+
+## Funktionen `greppo_logic`
+
+- Signatur: `greppo_logic(search_terms, filenames, invert_match, show_linenumbers)`
+
   - `search_terms`: Lista med strängar att söka efter.
   - `filenames`: Lista med filnamn att söka i.
   - `invert_match`: Boolsk flagga för om sökningen ska inverteras.
-  - `show_linenumbers`: Boolsk flagga för om radnummer ska finnas med i
-    resultatet.
-  - Funktionen ska returnera en tupel `(exit_code, matches)`, där `exit_code` är
-    0 om någon match hittades (eller vid inverterad sökning, om någon rad inte
-    matchade), annars 1. `matches` är en lista med strängar som representerar de
-    matchande raderna.
 
-#### <a name='Exempel'></a>Exempel
+- Utskrift: Inget!
 
-1. **Sök efter en sträng i en fil**
+- Returvärde: `(exit_code, matches)`
 
-   ```bash
-   $ python greppo.py --search "error" myfile.txt
-   myfile.txt:this is an error
-   myfile.txt:another error line
-   ```
+  - `exit_code` är `0` om någon match hittades (eller vid inverterad sökning, om
+    någon rad inte matchade), annars `1`.
+  - `matches` är en lista med strängar som representerar de matchande raderna.
 
-   - Förväntad utskrift: Visar alla rader som innehåller "error".
-   - Förväntad exitkod: `0` om minst en rad innehåller "error", annars `1`.
+Det är viktigt att notera att flaggan som gör att skriptet inte ska ge någon
+utmatning inte hanteras i `greppo_logic`. Vi gör så för att dela upp ansvaret en
+del mellan vad filerna.
 
-2. **Sök efter flera strängar i flera filer med radnummer**
+### Exempel
 
-   ```bash
-   $ python greppo.py --search "error" --search "warning" -n myfile.txt anotherfile.txt
-   myfile.txt:2:this is an error
-   myfile.txt:3:another error line
-   anotherfile.txt:1:error something something
-   anotherfile.txt:3:syntax error
-   anotherfile.txt:4:yet another error
-   ```
+Innehållet i filerna `filnamn1` och `filnamn2` kan ses i de tidigare exemplen
+för hela skriptet.
 
-   - Förväntad utskrift: Visar alla rader som innehåller "error" eller
-     "warning", inklusive radnummer.
-   - Förväntad exitkod: `0` om minst en rad matchar sökningen, annars `1`.
+1. Anrop: `greppo_logic(["one", "two"], ["filnamn1"], False, False)`
 
-3. **Inverterad sökning**
+   - Utskrift: Inget!
 
-   ```bash
-   $ python greppo.py --search "error" -v myfile.txt
-   myfile.txt:warning something something
-   myfile.txt:and a warning line
-   myfile.txt:
-   ```
+   - Returvärde: `(0, ["filnamn1:one", "filnamn1:two"])`
 
-   - Förväntad utskrift: Visar alla rader som **inte** innehåller "error".
-   - Förväntad exitkod: `0` om minst en rad **inte** innehåller "error" (och
-     därmed matchar den inverterade sökningen), annars `1`.
+2. Anrop: `greppo_logic(["o"], ["filnamn1"], False, False)`
 
-4. **Tyst läge**
+   - Utskrift: Inget!
 
-   ```bash
-   $ python greppo.py --search "error" -q myfile.txt
-   ```
+   - Returvärde: `(0, ["filnamn1:one", "filnamn1:two", "filnamn1:four"])`
 
-   - Ingen utskrift förväntas p.g.a. tyst läge.
-   - Förväntad exitkod: `0` om minst en rad innehåller "error", annars `1`.
+3. Anrop: `greppo_logic(["o"], ["filnamn2"], False, True)`
 
-### <a name='Inlmningsinstruktioner'></a>Inlämningsinstruktioner
+   - Utskrift: Inget!
+
+   - Returvärde: `(0, ["filnamn2:1:boat", "filnamn2:4:helicopter", "filnamn2:5:rocket"])`
+
+4. Anrop: `greppo_logic(["e"], ["filnamn1", "filnamn2"], True, True)`
+
+   - Utskrift: Inget!
+
+   - Returvärde: `(0, ["filnamn1:2:two", "filnamn1:4:four", "filnamn2:1:boat", "filnamn2:2:car"])`
+
+5. Anrop: `greppo_logic(["flower"], ["filnamn1", "filnamn2"], False, True)`
+
+   - Utskrift: Inget!
+
+   - Returvärde: `(1, [])`
+
+### Tips
+
+- `grep` fungerar som ett praktiskt exempel på vad vi vill uppnå. `greppo.py`
+  skiljer sig genom att det tar emot sökord med optionen `--search`. Övriga
+  optioner som `greppo.py` ska hantera är sådana `grep` också förstår.
+- För att göra uppgiften enklare, dela upp den i två delar: hantera kommandon
+  med `argparse` och utför sökningen i filerna. Lös dessa steg för sig och
+  kombinera dem sedan.
+
+# Inlämningsinstruktioner
 
 För att lämna in din uppgift, vänligen följ dessa steg:
 
-1. **Använda Github Classroom:**
+1. Använda Github Classroom och klona ditt uppgiftsrepository:
 
-   - Du har troligen redan accepterat uppgiften via en länk som tillhandahålls
-     av utbildaren och gjort en `git clone` av det tilldelade repositoriet då du
-     läser denna text. Det är i detta repository du kommer att hitta `README.md`
-     med ytterligare instruktioner.
+   - Om du läser det här i `README.md` har du redan börjat med uppgiften genom
+     att klicka på en länk från din utbildare och klonat ditt
+     uppgiftsrepository.
 
-2. **Modifiera `greppo.py` och `greppo_logic`:**
+2. Lös uppgiften:
 
-   - Din lösning på uppgiften ska skrivas i `greppo.py` samt `greppo_logic`.
+   - Din lösning ska skapas genom att ändra i de filer som nämns i
+     uppgiftsbeskrivningen. Följ instruktionerna där för var du ska lägga in din
+     kod.
 
-3. **Lämna in med Git:**
+3. Lämna in med Git:
 
-   - När du är klar med din uppgift, använd kommandona `git add .`, `git commit`
-     följt av `git push` för att skicka in dina ändringar till GitHub.
+   - När du är klar, använd `git add .`, `git commit` och sedan `git push` för
+     att skicka in ditt arbete till GitHub.
 
-4. **Automatiska "smoke tests":**
+4. Automatiska "smoke tests":
 
-   - Efter att du har pushat din kod kommer automatiska "smoke tests" att köras.
-     Dessa tester indikeras med en grön bock om de passerar, eller ett rött
-     kryss om de misslyckas. Om du får ett rött kryss, är det viktigt att du
-     klickar dig fram i GitHub tills du kan se varför testerna inte passerade.
+   - När du skickar in din kod körs "smoke tests" automatiskt. En grön bock
+     betyder att de gick igenom, medan ett rött kryss betyder att något gick
+     fel. Om du får ett rött kryss, kolla på GitHub varför testerna
+     misslyckades.
 
-5. **Feedback och granskning från utbildaren:**
+5. Feedback och granskning från utbildaren:
 
-   - Om dina tester passerar med en grön bock, kan du invänta feedback från din
-     utbildare. Utbildaren kan antingen sätta "Request Changes" om ytterligare
-     förändringar behövs, eller "approve" om uppgiften är godkänd som den är.
-     Det är viktigt att du inväntar någon av dessa innan du väljer Merge.
-   - Vid "Request Changes" är det viktigt att noggrant granska feedbacken och
-     göra de nödvändiga justeringarna baserat på utbildarens anvisningar för att
-     säkerställa att din uppgift uppfyller alla krav.
-   - Efter att utbildaren har gjort "Approve" på din inlämning, får du göra en
-     "Merge" av din "Feedback"-pull request, men inte förrän ett godkännande har
-     erhållits.
+   - När dina "smoke tests" får en grön bock väntar du på feedback från din
+     utbildare. Utbildaren kan vilja att du ändrar något eller godkänna din
+     uppgift direkt. Vänta med att slå ihop din kod ("Merge") tills uppgiften är
+     godkänd.
 
-6. **Initiera diskussioner i "Feedback"-pull requesten:**
+   - Om utbildaren vill att du ändrar något, läs noggrant och gör de ändringar
+     som behövs.
 
-   - Som student är du uppmuntrad att aktivt delta i processen genom att
-     initiera diskussioner i din "Feedback"-pull request. Detta är en viktig del
-     av inlärningsprocessen, där du kan ställa frågor, begära förtydliganden
-     eller diskutera lösningar och feedback med din utbildare. Att engagera sig
-     i dessa diskussioner ger dig möjlighet att djupare förstå uppgiftens krav
-     och förbättra din kod baserat på interaktionen.
+   - När uppgiften är godkänd och det inte finns mer att diskutera, kan du göra
+     "Merge" med din "Feedback"-pull request. Men, vänta alltid tills du har
+     fått ett godkännande.
 
-## <a name='Anteckningar'></a>Anteckningar
+6. Starta diskussioner i "Feedback"-pull requesten:
 
-- **Exitkod 0** indikerar vanligtvis att programmet har utfört sin uppgift
-  framgångsrikt och att de önskade villkoren uppfyllts (t.ex., minst en
-  matchning hittades).
-- **Exitkod 1** används för att signalera att programmet har utfört sin uppgift,
-  men de önskade villkoren inte uppfyllts (t.ex., ingen matchning hittades),
-  eller att ett fel inträffade.
+   - Utnyttja möjligheten att diskutera uppgiftens kod i din "Feedback"-pull
+     request. Det är ett bra sätt att lära sig genom att ställa frågor, be om
+     förklaringar eller diskutera lösningar och respons med din utbildare.
+
+# Anteckningar
+
+För att tydliggöra arkitekturen ytterligare så hade vi kunnat:
+
+1. Separera användarinteraktion från logik
+
+   - Låt `greppo.py` hantera filinläsningen och interaktionen med användaren.
+     Denna fil ska öppna och läsa innehållet i filerna, och sedan skicka den
+     inlästa datan till `greppo_logic.py`.
+
+2. Rena datatyper i `greppo_logic`
+
+   - Modifiera `greppo_logic` så att den returnerar data i en mer generell form,
+     som inte är bunden till hur resultatet ska visas. Använd `True` och `False`
+     istället för 0 och 1 för att ange sökresultat, och returnera resultat som
+     en lista av tuplar med radnummer och radinnehåll, exempelvis `[(radnummer, radinnehåll)]`.
+
+3. Låt `greppo.py` bestämma presentation
+
+   - `greppo.py` ska bestämma hur resultatet presenteras för användaren baserat
+     på datan från `greppo_logic`. Detta gör det lättare att ändra
+     presentationen utan att påverka logiken.
+
+Genom att tydligt skilja på "kommunikation med användaren" och "det programmet
+ska göra", ökar du kodens återanvändbarhet och gör det enklare att underhålla
+och utveckla vidare.
+
+Eftersom uppgiften redan är satt och inte kommer att ändras, erbjuder de
+föreslagna förbättringarna ovan ett bra tillfälle för reflektion och diskussion
+i pull requesten.
