@@ -1,5 +1,6 @@
 import pytest
 
+# TODO: Jag lägger in tester snart! :-)
 
 fn_name = "stringt"
 

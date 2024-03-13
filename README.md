@@ -1,20 +1,22 @@
-# Uppgift X - Beskrivande titel
+# Uppgift 9 - Skapa CLI-verktyget "greppo" för textfiltrering
 
 ## <a name='Syfte'></a>Syfte
 
-Vad denna uppgift lär ut.
+Syftet med den här uppgiften är att ge praktisk erfarenhet av att utveckla ett
+kommandoradsverktyg i Python som hanterar filinläsning, textbearbetning, och
+avancerad argumenthantering, vilket förbereder för skapandet av effektiva och
+användarvänliga skript och verktyg för dataanalys och automatisering.
 
 <!-- vscode-markdown-toc -->
 
 - [Syfte](#Syfte)
 - [Förberedelser](#Frberedelser)
+  - [Förberedelser](#Frberedelser-1)
 - [Beskrivning](#Beskrivning)
-  - [Del 1](#Del1)
-  - [Del 2](#Del2)
-- [Beskrivning](#Beskrivning-1)
   - [Detaljer](#Detaljer)
-    - [Skapa en funktion](#Skapaenfunktion)
-    - [Tips](#Tips)
+    - [Tekniska Krav:](#TekniskaKrav:)
+    - [greppo.py](#greppo.py)
+    - [greppo_logic.py](#greppo_logic.py)
     - [Exempel](#Exempel)
   - [Inlämningsinstruktioner](#Inlmningsinstruktioner)
 - [Anteckningar](#Anteckningar)
@@ -27,60 +29,127 @@ Vad denna uppgift lär ut.
 
 ## <a name='Frberedelser'></a>Förberedelser
 
-- Nödvändiga förberedelsesteg.
+### <a name='Frberedelser-1'></a>Förberedelser
+
+Innan du börjar med uppgiften bör du fokusera på följande tre viktiga
+förberedelser:
+
+1. **Förståelse för filhantering**: Bekanta dig med hur man [öppnar, läser, och hanterar filer](https://docs.python.org/3/tutorial/inputoutput.html#tut-files)
+   i Python. Detta är en grundläggande färdighet för uppgiften eftersom du
+   kommer att behöva läsa innehållet i en eller flera filer för att söka efter
+   specifika textsträngar. Se till att du förstår hur man använder
+   `open`-funktionen och kontextmanagers (`with`-satsen) för att effektivt
+   hantera filer.
+
+2. **Bli bekant med argparse-modulen**: Eftersom ditt CLI-verktyg kommer att ta
+   emot argument och flaggor från användaren, är det viktigt att du förstår hur
+   man använder [`argparse`-modulen](https://docs.python.org/3/library/argparse.html) för att tolka dessa kommandoradsargument. Gå igenom [Argparse Tutorial](https://docs.python.org/3/howto/argparse.html)
+   eller åtminstone läs igenom den övergripande dokumentationen för att få en
+   bra överblick över hur man definierar argument, hur man skapar en parser, och
+   hur man hämtar argumentvärdena i ditt program.
+
+3. **Grundläggande kunskap om strängmanipulation och sökning**: Eftersom
+   uppgiften innebär att söka efter och eventuellt modifiera textsträngar, är
+   det viktigt att du är bekväm med strängmanipulation i Python. Detta
+   inkluderar att veta hur man utför operationer som att söka efter substrängar,
+   jämföra strängar, och använda strängmetoder för att bearbeta text.
+
+Genom att fokusera på dessa tre förberedelser kommer du att lägga en stark grund
+för att framgångsrikt slutföra uppgiften och skapa ett användbart och effektivt
+CLI-verktyg.
 
 ## <a name='Beskrivning'></a>Beskrivning
 
-Denna uppgift fokuserar på att fördjupa förståelsen för de två viktigaste
-delarna av Pythons dokumentation.
-
-### <a name='Del1'></a>Del 1
-
-1. **If-satser**:
-
-Beskriv detaljerat...
-
-### <a name='Del2'></a>Del 2
-
-2. **while-loopar**:
-
-Beskriv detaljerat...
-
-## <a name='Beskrivning-1'></a>Beskrivning
-
-Skriv en funktion med namnet `calculate_area` som beräknar arean av en
-rektangel.
+Skapa CLI-verktyget greppo för att söka efter textsträngar i filer. Användare
+specificerar söksträngar och filer, och greppo visar matchande rader.
 
 ### <a name='Detaljer'></a>Detaljer
 
-#### <a name='Skapaenfunktion'></a>Skapa en funktion
+Kommandots utskrifter när det skriver ut något ska motsvara hur `grep -Hv`
+fungerar. Det är sådana utskrifter i exemplen som följer.
 
-- **Funktionsignatur:** `def calculate_area(length: float, width: float) ->
-float:`
-- **Vad den ska göra:** Funktionen tar två argument, `length` och `width`, och
-  returnerar rektangelns area.
-- **Vad den ska skriva ut:** Funktionen ska skriva ut "Rektangelns area är: X"
-  innan den returnerar, där X är den beräknade arean.
-- **Vad den ska returnera:** Funktionen ska returnera den beräknade arean som
-  ett flyttal.
+#### <a name='TekniskaKrav:'></a>Tekniska Krav:
 
-#### <a name='Tips'></a>Tips
+1. **Argumenthantering med argparse**: Använd `argparse`-modulen för att hantera
+   kommandoradsargument.
+2. **Funktionsuppdelning**: Dela upp programmet i två filer: `greppo.py` för
+   kommandoradsinterfacing och `greppo_logic.py` för själva söklogiken.
 
-- Kom ihåg, arean av en rektangel beräknas som `längd * bredd`.
-- Se till att din funktion skriver ut det krävda meddelandet innan den
-  returnerar arean.
+#### <a name='greppo.py'></a>greppo.py
+
+- Filen `greppo.py` ska hantera användarinput och skriva ut resultatet av
+  sökningen.
+- Använd `argparse` för att tolka följande argument:
+  - Filnamn (en eller flera).
+  - `--search` för söksträngar, kan anges flera gånger.
+  - `-n` eller `--line-number` för att inkludera radnummer i utskriften.
+  - `-v` eller `--invert-match` för att invertera sökningen (matcha rader som
+    inte innehåller söksträngarna).
+  - `-q`, `--quiet`, eller `--silent` för att undertrycka utskrift (endast
+    exitkod).
+- Funktionen `main` ska samla argumenten och anropa en funktion från
+  `greppo_logic.py` med dessa.
+
+#### <a name='greppo_logic.py'></a>greppo_logic.py
+
+- Skapa en funktion `greppo_logic(search_terms, filenames, invert_match)`:
+  - `search_terms`: Lista med strängar att söka efter.
+  - `filenames`: Lista med filnamn att söka i.
+  - `invert_match`: Boolsk flagga för om sökningen ska inverteras.
+  - Funktionen ska returnera en tupel `(exit_code, matches)`, där `exit_code` är
+    0 om någon match hittades (eller vid inverterad sökning, om någon rad inte
+    matchade), annars 1. `matches` är en lista med strängar som representerar de
+    matchande raderna.
 
 #### <a name='Exempel'></a>Exempel
 
-1. **Anrop:** `calculate_area(5, 10)`
-   - **Förväntad utskrift:** "Rektangelns area är: 50"
-   - **Förväntat returvärde:** 50.0
-2. **Anrop:** `calculate_area(3.5, 2)`
-   - **Förväntad utskrift:** "Rektangelns area är: 7"
-   - **Förväntat returvärde:** 7.0
-3. **Anrop:** `calculate_area(7, 8)`
-   - **Förväntad utskrift:** "Rektangelns area är: 56"
-   - **Förväntat returvärde:** 56.0
+1. **Sök efter en sträng i en fil**
+
+   ```bash
+   $ python greppo.py --search "error" myfile.txt
+   myfile.txt:this is an error
+   myfile.txt:another error line
+   ```
+
+   - Förväntad utskrift: Visar alla rader som innehåller "error".
+   - Förväntad exitkod: `0` om minst en rad innehåller "error", annars `1`.
+
+2. **Sök efter flera strängar i flera filer med radnummer**
+
+   ```bash
+   $ python greppo.py --search "error" --search "warning" -n myfile.txt anotherfile.txt
+   myfile.txt:2:this is an error
+   myfile.txt:3:another error line
+   anotherfile.txt:1:error something something
+   anotherfile.txt:3:syntax error
+   anotherfile.txt:4:yet another error
+   ```
+
+   - Förväntad utskrift: Visar alla rader som innehåller "error" eller
+     "warning", inklusive radnummer.
+   - Förväntad exitkod: `0` om minst en rad matchar sökningen, annars `1`.
+
+3. **Inverterad sökning**
+
+   ```bash
+   $ python greppo.py --search "error" -v myfile.txt
+   myfile.txt:warning something something
+   myfile.txt:and a warning line
+   myfile.txt:
+   ```
+
+   - Förväntad utskrift: Visar alla rader som **inte** innehåller "error".
+   - Förväntad exitkod: `0` om minst en rad **inte** innehåller "error" (och
+     därmed matchar den inverterade sökningen), annars `1`.
+
+4. **Tyst läge**
+
+   ```bash
+   $ python greppo.py --search "error" -q myfile.txt
+   ```
+
+   - Ingen utskrift förväntas p.g.a. tyst läge.
+   - Förväntad exitkod: `0` om minst en rad innehåller "error", annars `1`.
 
 ### <a name='Inlmningsinstruktioner'></a>Inlämningsinstruktioner
 
@@ -93,14 +162,9 @@ För att lämna in din uppgift, vänligen följ dessa steg:
      läser denna text. Det är i detta repository du kommer att hitta `README.md`
      med ytterligare instruktioner.
 
-2. **Modifiera `uppgift.py`:**
+2. **Modifiera `greppo.py` och `greppo_logic`:**
 
-   - Din lösning på uppgiften ska skrivas i `uppgift.py`. Det finns specifika
-     instruktioner i `uppgift.py` om var du ska placera din källkod.
-
-<!-- 2. **Modifiera `uppgift.md`:**
-
-   - Din lösning på uppgiften ska skrivas i `uppgift.md`. Det finns en struktur att utöka med dina lösningar i `uppgift.md`. -->
+   - Din lösning på uppgiften ska skrivas i `greppo.py` samt `greppo_logic`.
 
 3. **Lämna in med Git:**
 
@@ -138,4 +202,9 @@ För att lämna in din uppgift, vänligen följ dessa steg:
 
 ## <a name='Anteckningar'></a>Anteckningar
 
-Inga.
+- **Exitkod 0** indikerar vanligtvis att programmet har utfört sin uppgift
+  framgångsrikt och att de önskade villkoren uppfyllts (t.ex., minst en
+  matchning hittades).
+- **Exitkod 1** används för att signalera att programmet har utfört sin uppgift,
+  men de önskade villkoren inte uppfyllts (t.ex., ingen matchning hittades),
+  eller att ett fel inträffade.
