@@ -93,10 +93,12 @@ fungerar. Det är sådana utskrifter i exemplen som följer.
 
 #### <a name='greppo_logic.py'></a>greppo_logic.py
 
-- Skapa en funktion `greppo_logic(search_terms, filenames, invert_match)`:
+- Skapa en funktion `greppo_logic(search_terms, filenames, invert_match, show_linenumbers)`:
   - `search_terms`: Lista med strängar att söka efter.
   - `filenames`: Lista med filnamn att söka i.
   - `invert_match`: Boolsk flagga för om sökningen ska inverteras.
+  - `show_linenumbers`: Boolsk flagga för om radnummer ska finnas med i
+    resultatet.
   - Funktionen ska returnera en tupel `(exit_code, matches)`, där `exit_code` är
     0 om någon match hittades (eller vid inverterad sökning, om någon rad inte
     matchade), annars 1. `matches` är en lista med strängar som representerar de
