@@ -3,8 +3,7 @@
 # namnger funktioner, klasser och variabler exakt med de namn som står i
 # beskrivningen.
 import argparse
-
-# import greppo_logic
+from greppo_logic import greppo_logic
 
 
 def main():
@@ -15,15 +14,28 @@ def main():
     )
     parser.add_argument("files", nargs="+", help="Space-separated filenames")
     parser.add_argument("--search", nargs="+", help="Space-separated search-strings.")
-    parser.add_argument("-n", "--line-number", help="Show line-numbers.")
-    # parser.add_argument("-v", "--invert-match", help="Invert selection.")
+    parser.add_argument(
+        "-n", "--line-number", help="Show line-numbers.", action="store_true"
+    )
+    parser.add_argument(
+        "-v", "--invert-match", help="Invert selection.", action="store_true"
+    )
     # parser.add_argument("-q", "--quiet", "--silent", help="Only show exit-code.")
 
     test = parser.parse_args()
 
-    print(parser)
+    filenames = list(test.files)
+    search_terms = list(test.search)
+    invert_match = test.invert_match
+    show_line_numbers = test.line_number
+
+    print(filenames)
+    print(search_terms)
+    print(invert_match)
+    print(show_line_numbers)
+
     print(test)
-    # greppo_logic.nånfunktion(typ args)
+    greppo_logic(search_terms, filenames, invert_match, show_line_numbers)
 
 
 if __name__ == "__main__":

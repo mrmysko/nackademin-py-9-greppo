@@ -3,7 +3,7 @@
 # beskrivningen.
 
 
-def greppo_logic(search_terms, filenames, invert_match):
+def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers: bool):
     # Collect matching lines in some thing...
 
     """for file in filenames:
@@ -12,29 +12,61 @@ def greppo_logic(search_terms, filenames, invert_match):
         use .readlines() and an iterator to keep track of which lines contain matches?
         save iterator and line in like a tuple or something?"""
 
-        # saves tuple of index and line with match.
-        for index, line in enumerate(fp.readlines()):
-            for item in search_terms:
-                if item in line:
-                    match.append((index, line))
+    # saves tuple of index and line with match.
+    """for file in filenames:
+        with open(file, "r") as fp:
+            reader = fp.readlines()
 
-    print("Greppo logic.")
+            for index, line in enumerate(reader):
+                if invert_match == 1:
+                    if not search_terms in line:
+                        if show_line_numbers == 1:
+                            print(f"{file}:{index}:{line}", end="")
+                        else:
+                            print(f"{file}:{line}", end="")
+                else:
+                    if search_terms in line:
+                        if show_line_numbers == 1:
+                            print(f"{file}:{index}:{line}", end="")
+                        else:
+                            print(f"{file}:{line}", end="")"""
+    some_list = list()
+
+    for file in filenames:
+        with open(file, "r") as fp:
+            reader = fp.readlines()
+
+            match_lines = [
+                line
+                for x in search_terms
+                for index, line in enumerate(reader)
+                if x in line
+            ]
+
+            for i in match_lines:
+                print(i, end="")
+
+            # for index, line in enumerate(reader):
+            #    match_lines = [line for x in search_terms if x in line for index, line in enumerate(reader)]
+            #    some_list.extend(match_lines)
+    # print(some_list)
+
+    # for index, line in enumerate(reader):
+
+    # print(match_lines)
+
+    #   if any(x in line for x in search_terms):
+    #        print(line, end="")
+
+    # Ok, it prints. Now return a tuple with exit code instead.
+
+    """Det här matchar ju t.ex. for i fortnite, alternativt använd re för att kolla 
+    efter match object och printa hela strängen om en match hittas?
+    """
+
+    """Also, få bort alla nested ifs, måste finnas snyggare sätt att modifiera en loop om ett condition uppfylls."""
 
 
 if __name__ == "__main__":
-    # Här kan du skriva testkod som bara körs när du kör filen direkt och inte
-    # när den importeras som modul i en annan fil.
-    #
-    # Koden importeras som en modul av autograding-funktionen för att utföra ett
-    # "smoke test" av din funktion, så det är viktigt att din kod inte kör något
-    # utanför denna if-sats.
-    #
-    # Exempel:
-    #
-    # print(funktionsnamn("hejsan", 99))
-    # print(funktionsnamn([19, 22, 31, 29, 1])
-    #
-    # Exempel:
-    # minklass = Klass()
-    # print(klass.leet("hejsan")
-    pass  # Ta bort denna rad när du skriver din kod
+
+    greppo_logic(["for"], ["file.txt", "file2.txt"], 1, 1)
