@@ -1,64 +1,65 @@
-# Skriv endast definitioner här på denna indenteringsnivå! Det är viktigt att du
-# namnger funktioner, klasser och variabler exakt med de namn som står i
-# beskrivningen.
+# Todo - Error-handling
+# Todo - Less ifs
+# Todo - Only match actual search_terms, not "for" in "fortnite"
+# Todo - Invert seems to match empty lines.
 
 
 def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers: bool):
-    # Collect matching lines in some thing...
+    """Returns lines matching items in search_terms."""
 
-    """for file in filenames:
-    with open(file, 'r', encoding=utf-8) as fp:
-        # read lines, looking for lines, or if inverted look for not lines
-        use .readlines() and an iterator to keep track of which lines contain matches?
-        save iterator and line in like a tuple or something?"""
-
-    # saves tuple of index and line with match.
-    """for file in filenames:
-        with open(file, "r") as fp:
-            reader = fp.readlines()
-
-            for index, line in enumerate(reader):
-                if invert_match == 1:
-                    if not search_terms in line:
-                        if show_line_numbers == 1:
-                            print(f"{file}:{index}:{line}", end="")
-                        else:
-                            print(f"{file}:{line}", end="")
-                else:
-                    if search_terms in line:
-                        if show_line_numbers == 1:
-                            print(f"{file}:{index}:{line}", end="")
-                        else:
-                            print(f"{file}:{line}", end="")"""
-    some_list = list()
+    match_lines = list()
 
     for file in filenames:
-        with open(file, "r") as fp:
+        with open(file, "r", encoding="utf-8") as fp:
             reader = fp.readlines()
 
-            match_lines = [
-                line
-                for x in search_terms
-                for index, line in enumerate(reader)
-                if x in line
-            ]
+            # This is not readable tbh.
+            if invert_match:
+                if show_line_numbers:
+                    match_lines.extend(
+                        [
+                            f"{file}:{index}:{line.strip('\n')}"
+                            for x in search_terms
+                            for index, line in enumerate(reader)
+                            if x not in line
+                        ]
+                    )
+                else:
+                    match_lines.extend(
+                        [
+                            f"{file}:{line.strip('\n')}"
+                            for x in search_terms
+                            for line in reader
+                            if x not in line
+                        ]
+                    )
+            else:
+                if show_line_numbers:
+                    match_lines.extend(
+                        [
+                            f"{file}:{index}:{line.strip('\n')}"
+                            for x in search_terms
+                            for index, line in enumerate(reader)
+                            if x in line
+                        ]
+                    )
+                else:
+                    match_lines.extend(
+                        [
+                            f"{file}:{line.strip('\n')}"
+                            for x in search_terms
+                            for line in reader
+                            if x in line
+                        ]
+                    )
 
-            for i in match_lines:
-                print(i, end="")
+    # Why would invert return a 1 on matches? Isnt exit-code "decoupled" from logic? A '1' signifies an error or no matches tbh.
+    if len(match_lines) == 0:
+        exit_code = 1
+    else:
+        exit_code = 0
 
-            # for index, line in enumerate(reader):
-            #    match_lines = [line for x in search_terms if x in line for index, line in enumerate(reader)]
-            #    some_list.extend(match_lines)
-    # print(some_list)
-
-    # for index, line in enumerate(reader):
-
-    # print(match_lines)
-
-    #   if any(x in line for x in search_terms):
-    #        print(line, end="")
-
-    # Ok, it prints. Now return a tuple with exit code instead.
+    return tuple((match_lines, exit_code))
 
     """Det här matchar ju t.ex. for i fortnite, alternativt använd re för att kolla 
     efter match object och printa hela strängen om en match hittas?
@@ -68,5 +69,4 @@ def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers:
 
 
 if __name__ == "__main__":
-
-    greppo_logic(["for"], ["file.txt", "file2.txt"], 1, 1)
+    pass

@@ -13,7 +13,9 @@ def main():
         prog="Greppo", description="A python implementation of grep -Hv"
     )
     parser.add_argument("files", nargs="+", help="Space-separated filenames")
-    parser.add_argument("--search", nargs="+", help="Space-separated search-strings.")
+    parser.add_argument(
+        "--search", action="append", help="Space-separated search-strings."
+    )
     parser.add_argument(
         "-n", "--line-number", help="Show line-numbers.", action="store_true"
     )
@@ -22,20 +24,9 @@ def main():
     )
     # parser.add_argument("-q", "--quiet", "--silent", help="Only show exit-code.")
 
-    test = parser.parse_args()
+    args = parser.parse_args()
 
-    filenames = list(test.files)
-    search_terms = list(test.search)
-    invert_match = test.invert_match
-    show_line_numbers = test.line_number
-
-    print(filenames)
-    print(search_terms)
-    print(invert_match)
-    print(show_line_numbers)
-
-    print(test)
-    greppo_logic(search_terms, filenames, invert_match, show_line_numbers)
+    print(greppo_logic(args.search, args.files, args.invert_match, args.line_number))
 
 
 if __name__ == "__main__":
