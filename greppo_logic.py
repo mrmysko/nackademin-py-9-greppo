@@ -1,7 +1,9 @@
 # Todo - Error-handling
 # Todo - Less ifs
-# Todo - Only match actual search_terms, not "for" in "fortnite"
+# Todo - Only match actual search_terms, not "for" in "fortnite" - DONE
 # Todo - Invert seems to match empty lines.
+
+import re
 
 
 def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers: bool):
@@ -21,7 +23,7 @@ def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers:
                             f"{file}:{index}:{line.strip('\n')}"
                             for x in search_terms
                             for index, line in enumerate(reader)
-                            if x not in line
+                            if not re.search(rf"\b{x}\b", line)
                         ]
                     )
                 else:
@@ -30,7 +32,7 @@ def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers:
                             f"{file}:{line.strip('\n')}"
                             for x in search_terms
                             for line in reader
-                            if x not in line
+                            if not re.search(rf"\b{x}\b", line)
                         ]
                     )
             else:
@@ -40,7 +42,7 @@ def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers:
                             f"{file}:{index}:{line.strip('\n')}"
                             for x in search_terms
                             for index, line in enumerate(reader)
-                            if x in line
+                            if re.search(rf"\b{x}\b", line)
                         ]
                     )
                 else:
@@ -49,7 +51,7 @@ def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers:
                             f"{file}:{line.strip('\n')}"
                             for x in search_terms
                             for line in reader
-                            if x in line
+                            if re.search(rf"\b{x}\b", line)
                         ]
                     )
 
@@ -60,10 +62,6 @@ def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers:
         exit_code = 0
 
     return tuple((match_lines, exit_code))
-
-    """Det här matchar ju t.ex. for i fortnite, alternativt använd re för att kolla 
-    efter match object och printa hela strängen om en match hittas?
-    """
 
     """Also, få bort alla nested ifs, måste finnas snyggare sätt att modifiera en loop om ett condition uppfylls."""
 
