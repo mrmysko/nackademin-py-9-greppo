@@ -1,42 +1,52 @@
 # Todo - Error-handling
-# Todo - Less ifs
+    # Error states:
+    # File not found.
+    # Empty search_terms. Should no search_terms match nothing? Should the inversion of that match everything?
+
+# Extra - Color search_terms?
+# Extra - Relative filepaths? ~, ., ..?
+# Extra - -r flag for recursive filesearch?
 
 import re
 
 
-def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers: bool):
-    """Returns lines matching items in search_terms."""
+def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers: bool) -> tuple:
+    """Returns lines matching strings in search_terms."""
 
     match_lines = list()
 
     for file in filenames:
-        with open(file, "r", encoding="utf-8") as fp:
-            reader = fp.readlines()
-
+        try:
+            with open(file, "r", encoding="utf-8") as fp:
+                reader = fp.readlines()
+        except FileNotFoundError:
+            continue
+            
+        # This is not readable tbh.
+        for index, line in enumerate(reader):
             if invert_match:
-                for index, line in enumerate(reader):
 
                     # Reset search_word tracker.
                     search_word_dict = dict((i, False) for i in search_terms)
 
-                    for key in search_word_dict.keys():
-                        # Returns a match object. True if a match is found.
-                        if re.search(rf"\b{key}\b", line):
-                            search_word_dict[key] = True
+                    # Flip keys to True if match is found.
+                    search_word_dict = {key:True for key in search_word_dict.keys() if re.search(rf"\b{key}\b", line)}
+
+                    # Line above is equivalent to:
+                    #for key in search_word_dict.keys():
+                    #    # Returns a match object. True if a match is found.
+                    #    if re.search(rf"\b{key}\b", line):
+                    #        search_word_dict[key] = True
 
                     # Returns False if any value in search_word_dict is True. Check length of string to not add empty strings. (\n counts as a char)
                     if not any(search_word_dict.values()) and len(line) > 1:
-                        match_lines.append(rf"{file}:{str(index) + ":" if show_line_numbers else ''}:{line.strip()}")
-                        """Now, hur kokar jag ner den här i en list comprehension?"""
+                        match_lines.append(rf"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip()}")
 
-            # This is not readable tbh.                
-            # If note invert match, easier.
             else:
                 match_lines.extend(
                     [
                         f"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip('\n')}"
                         for x in search_terms
-                        for index, line in enumerate(reader)
                         if re.search(rf"\b{x}\b", line)
                     ]
                 )
