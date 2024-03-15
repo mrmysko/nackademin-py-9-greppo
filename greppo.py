@@ -26,7 +26,14 @@ def main():
 
     args = parser.parse_args()
 
-    print(greppo_logic(args.search, args.files, args.invert_match, args.line_number))
+    greppo_logic(args.search, args.files, args.invert_match, args.line_number)
+    # matches = greppo_logic(args.search, args.files, args.invert_match, args.line_number)
+
+    # if matches[0] != 0:
+    #    print("No matches found.")
+    # else:
+    #    for i in matches[1]:
+    #        print(i)
 
 
 if __name__ == "__main__":
