@@ -9,6 +9,7 @@
 # Extra - -r flag for recursive filesearch?
 
 # Refactoring - Do I actually need a dict to keep track of matches in the invert case?...If even one value is True, break that iteration without an append.
+#             - Without the dict I would have to check match_lines for repeat lines for every search_term?
 
 import re
 
@@ -34,37 +35,22 @@ def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers:
             
         # This is not readable tbh.
         for index, line in enumerate(reader):
+            # The full formated string to append to match_lines.
+            full_line = f"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip('\n')}"
+            
             if invert_match:
 
-                    # Reset search_word tracker.
-                    search_word_dict = dict((i, False) for i in search_terms)
-
                     # Flip keys to True if match is found.
-                    search_word_dict = {key:True for key in search_word_dict.keys() if re.search(rf"\b{key}\b", line)}
-
-                    # Line above is equivalent to:
-                    #for key in search_word_dict.keys():
-                    #    # Returns a match object. True if a match is found.
-                    #    if re.search(rf"\b{key}\b", line):
-                    #        search_word_dict[key] = True
+                    search_word_dict = {key:True for key in search_terms if re.search(rf"\b{key}\b", line)}
 
                     # Returns False if any value in search_word_dict is True. Check length of string to not add empty strings. (\n counts as a char)
-                    if not any(search_word_dict.values()) and len(line) > 1 and line not in match_lines:
-                        match_lines.append(rf"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip()}")
+                    if not any(search_word_dict.values()) and len(line) > 1:
+                        match_lines.append(full_line)
 
             else:
-                full_line = f"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip('\n')}"
                 for i in search_terms:
                     if re.search(rf"\b{i}\b", line) and full_line not in match_lines:
                         match_lines.append(full_line)
-
-                #match_lines.extend(
-                #    [
-                #        f"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip('\n')}"
-                #        for x in search_terms
-                #        if re.search(rf"\b{x}\b", line) and line 
-                #    ]
-                #)
 
     # Why would invert return a 1 on matches? Isnt exit-code "decoupled" from logic? A '1' signifies an error or no matches tbh.
     if len(match_lines) == 0:
