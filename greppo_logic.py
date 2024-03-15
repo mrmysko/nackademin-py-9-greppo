@@ -1,16 +1,16 @@
-# Todo - Error-handling
+# Todo - Error-handling - FIXED
     # Error states:
     # File not found.
     # Empty search_terms. Should no search_terms match nothing? Should the inversion of that match everything?
+# Todo - Lines with multiple matches repeat - FIXED
 
 # Extra - Color search_terms?
 # Extra - Relative filepaths? ~, ., ..?
 # Extra - -r flag for recursive filesearch?
 
-# Todo - Lines with multiple matches repeat...use a set?
+# Refactoring - Do I actually need a dict to keep track of matches in the invert case?...If even one value is True, break that iteration without an append.
 
 import re
-from collections import Counter
 
 
 def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers: bool) -> tuple:
@@ -18,6 +18,7 @@ def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers:
 
     match_lines = list()
 
+    # Handles empty search_terms without raising an exception.
     # This evaluates to True if search_terms is not empty...but is it more correct to do len(search_terms) >= 1 for more readability?
     if search_terms:
         pass
@@ -52,13 +53,11 @@ def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers:
                         match_lines.append(rf"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip()}")
 
             else:
-                print("LINE: ", line.strip())
-                print("MATCH: ", match_lines)
+                full_line = f"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip('\n')}"
                 for i in search_terms:
-                    if line.strip() in match_lines:
-                        print("TRUE")
-                    if re.search(rf"\b{i}\b", line):
-                        match_lines.append(f"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip('\n')}")
+                    if re.search(rf"\b{i}\b", line) and full_line not in match_lines:
+                        match_lines.append(full_line)
+
                 #match_lines.extend(
                 #    [
                 #        f"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip('\n')}"
@@ -66,16 +65,6 @@ def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers:
                 #        if re.search(rf"\b{x}\b", line) and line 
                 #    ]
                 #)
-
-    """It's never gonna match...because .strip() changes the string. And match_lines has the filename etc. in it."""
-
-    """I guess this is needed because the list comprehension only checks the validity on the first loop or something?"""
-    """Removing repeat lines from match_lines"""
-    # .count() vs Counter https://stackoverflow.com/a/23909767
-    #match_count = Counter(match_lines)
-    #for key, value in match_count.items():
-    #    if value != 1:
-    #        match_lines.remove(key)
 
     # Why would invert return a 1 on matches? Isnt exit-code "decoupled" from logic? A '1' signifies an error or no matches tbh.
     if len(match_lines) == 0:
