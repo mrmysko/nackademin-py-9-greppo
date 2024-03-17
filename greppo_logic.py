@@ -37,7 +37,7 @@ def greppo_logic(
 
         # This is not readable tbh.
         for index, line in enumerate(reader, start=1):
-            # The full formated string to append to match_lines. - ANSI color codes prolly dont work on windows?
+            # The full formated string to append to match_lines.
             full_line = f"{PURPLE}{file}{CYAN}:{DEFAULT}{GREEN + str(index) + CYAN + ':' + DEFAULT if show_line_numbers else ''}{line.strip()}"
 
             # Flip keys to True if match is found.
@@ -52,12 +52,12 @@ def greppo_logic(
 
             if invert_match:
 
-                # Returns False if any value in search_word_dict is True. Check length of string to not add empty strings. (\n counts as a char)
-                if not any(search_word_dict.values()) and len(line) > 1:
+                # Returns False if any value in search_word_dict is True.
+                if not any(search_word_dict.values()):
                     match_lines.append(full_line)
 
             else:
-                if any(search_word_dict.values()) and len(line) > 1:
+                if any(search_word_dict.values()):
                     match_lines.append(full_line)
 
     # Why would invert return a 1 on matches? Isnt exit-code "decoupled" from logic? A '1' signifies an error or no matches tbh.
