@@ -1,5 +1,6 @@
 # Empty search_terms. Should no search_terms match nothing? Should the inversion of that match everything? - FIXED
 # Todo - Lines with multiple matches repeat - FIXED
+# Todo - grep matches terms inside strings, so regex isnt needed, search_term in line is enough. Add a flag for exact match?
 
 # Extra - Color search_terms matches red. re replace match with {red}{match}{white}?
 # Extra - Relative filepaths? ~, ., ..?
@@ -13,10 +14,10 @@ def greppo_logic(
 ) -> tuple:
     """Returns lines matching strings in search_terms."""
 
-    default = "\033[0m"
-    green = "\033[92m"
-    cyan = "\033[94m"
-    purple = "\033[95m"
+    DEFAULT = "\033[0m"
+    GREEN = "\033[92m"
+    CYAN = "\033[94m"
+    PURPLE = "\033[95m"
 
     match_lines = list()
 
@@ -37,7 +38,7 @@ def greppo_logic(
         # This is not readable tbh.
         for index, line in enumerate(reader, start=1):
             # The full formated string to append to match_lines. - ANSI color codes prolly dont work on windows?
-            full_line = f"{purple}{file}{cyan}:{default}{green + str(index) + cyan + ':' + default if show_line_numbers else ''}{line.strip()}"
+            full_line = f"{PURPLE}{file}{CYAN}:{DEFAULT}{GREEN + str(index) + CYAN + ':' + DEFAULT if show_line_numbers else ''}{line.strip()}"
 
             # Flip keys to True if match is found.
             search_word_dict = {
