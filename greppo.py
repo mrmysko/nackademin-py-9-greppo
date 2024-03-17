@@ -21,11 +21,14 @@ def main():
     parser.add_argument(
         "-v", "--invert-match", help="invert selection.", action="store_true"
     )
+    parser.add_argument("-w", "--exact", help="exact match", action="store_true")
     # parser.add_argument("-q", "--quiet", "--silent", help="Only show exit-code.")
 
     args = parser.parse_args()
 
-    matches = greppo_logic(args.search, args.files, args.invert_match, args.line_number)
+    matches = greppo_logic(
+        args.search, args.files, args.invert_match, args.line_number, args.exact
+    )
 
     if matches[0] != 0:
         print("No matches found.")

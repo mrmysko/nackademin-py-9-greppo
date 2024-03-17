@@ -10,7 +10,11 @@ import re
 
 
 def greppo_logic(
-    search_terms, filenames, invert_match: bool, show_line_numbers: bool
+    search_terms,
+    filenames,
+    invert_match: bool,
+    show_line_numbers: bool,
+    exact: bool,
 ) -> tuple:
     """Returns lines matching strings in search_terms."""
 
@@ -41,9 +45,14 @@ def greppo_logic(
             full_line = f"{PURPLE}{file}{CYAN}:{DEFAULT}{GREEN + str(index) + CYAN + ':' + DEFAULT if show_line_numbers else ''}{line.strip()}"
 
             # Flip keys to True if match is found.
-            search_word_dict = {
-                key: True for key in search_terms if re.search(rf"\b{key}\b", line)
-            }
+            # Match only full words. "for" in "fortnite" == False
+            if exact:
+                search_word_dict = {
+                    key: True for key in search_terms if re.search(rf"\b{key}\b", line)
+                }
+            # Match sub-strings. "for" in "fortnite" == True
+            else:
+                search_word_dict = {key: True for key in search_terms if key in line}
 
             if invert_match:
 
