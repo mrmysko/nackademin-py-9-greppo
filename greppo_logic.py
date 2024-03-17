@@ -1,7 +1,7 @@
 # Todo - Error-handling - FIXED
-# Error states:
-# File not found.
-# Empty search_terms. Should no search_terms match nothing? Should the inversion of that match everything?
+    # Error states:
+    # File not found.
+    # Empty search_terms. Should no search_terms match nothing? Should the inversion of that match everything?
 # Todo - Lines with multiple matches repeat - FIXED
 
 # Extra - Color search_terms?
@@ -11,9 +11,7 @@
 import re
 
 
-def greppo_logic(
-    search_terms, filenames, invert_match: bool, show_line_numbers: bool
-) -> tuple:
+def greppo_logic(search_terms, filenames, invert_match: bool, show_line_numbers: bool) -> tuple:
     """Returns lines matching strings in search_terms."""
 
     match_lines = list()
@@ -23,7 +21,7 @@ def greppo_logic(
     if search_terms:
         pass
     else:
-        search_terms = ""
+        search_terms = ''
 
     for file in filenames:
         try:
@@ -31,17 +29,14 @@ def greppo_logic(
                 reader = fp.readlines()
         except FileNotFoundError:
             continue
-
+            
+        # This is not readable tbh.
         for index, line in enumerate(reader):
             # The full formated string to append to match_lines.
-            full_line = (
-                f"{file}:{str(index) + ':' if show_line_numbers else ''}{line.strip()}"
-            )
+            full_line = f"{file}:{str(index) + ":" if show_line_numbers else ''}{line.strip('\n')}"
 
             # Flip keys to True if match is found.
-            search_word_dict = {
-                key: True for key in search_terms if re.search(rf"\b{key}\b", line)
-            }
+            search_word_dict = {key:True for key in search_terms if re.search(rf"\b{key}\b", line)}
 
             if invert_match:
 
