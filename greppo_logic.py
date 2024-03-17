@@ -1,7 +1,3 @@
-# Empty search_terms. Should no search_terms match nothing? Should the inversion of that match everything? - FIXED
-# Todo - Lines with multiple matches repeat - FIXED
-# Todo - grep matches terms inside strings, so regex isnt needed, search_term in line is enough. Add a flag for exact match?
-
 # Extra - Color search_terms matches red. re replace match with {red}{match}{white}?
 # Extra - Relative filepaths? ~, ., ..?
 # Extra - -r flag for recursive filesearch?
@@ -67,6 +63,10 @@ def greppo_logic(
     # Why would invert return a 1 on matches? Isnt exit-code "decoupled" from logic? A '1' signifies an error or no matches tbh.
     # Anything in any(match_lines) returns True, and int(True) == 1, since we want to return 0 on matches tho we can do "not any()" which reverses it.
     return (int(not any(match_lines)), match_lines)
+
+    def find_match(term, line):
+        pass
+        return False
 
 
 if __name__ == "__main__":
