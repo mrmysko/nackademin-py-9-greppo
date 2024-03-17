@@ -1,50 +1,107 @@
-import pytest
+import subprocess
+import pytest  # noqa: F401
 
-# TODO: Jag lägger in tester snart! :-)
-
-fn_name = "stringt"
+fn_name = "greppo_logic"
 
 
 class ImportDetailsError(Exception):
     pass
 
 
+def run_script(*args):
+    cmd = ["python", "greppo.py"] + list(args)
+    result = subprocess.run(cmd, text=True, capture_output=True)
+    return result.stdout, result.returncode
+
+
 try:
-    import uppgift
+    # Test cases for greppo_logic.py
+
+    import greppo_logic as uppgift
 
     fn = getattr(uppgift, fn_name)
 
     if not callable(fn):
         raise ImportDetailsError(f"Function {fn_name} is not callable")
 
-    # Alt #1:
-    #
-    if not fn.__code__.co_argcount == 2:
-        raise ImportDetailsError(f"Function {fn_name} must take exactly two arguments")
+    if not fn.__code__.co_argcount == 4:
+        raise ImportDetailsError(f"Function {fn_name} must take exactly four arguments")
 
-    # Alt #2:
-    #
-    # Kontrollera att funktionen accepterar en variabel mängd argument
-    # Notera: Vi kan inte enkelt kontrollera antalet positionella argument för
-    # en funktion som accepterar *args, så vi hoppar över den kontrollen här.
+    def test_greppo_logic_example_two_search_strings():
+        filenames = ["filnamn1"]
+        search_terms = ["one", "two"]
+        matches = fn(search_terms, filenames, False, False)
+        expected = (0, ["filnamn1:one", "filnamn1:two"])
+        assert matches == expected
 
-    def test_exempel_1():
-        assert fn("Hej", "världen", sep=", ", end="!") == "Hej, världen!"
+    def test_greppo_logic_example_o_as_search_string():
+        filenames = ["filnamn1"]
+        search_terms = ["o"]
+        matches = fn(search_terms, filenames, False, False)
+        expected = (0, ["filnamn1:one", "filnamn1:two", "filnamn1:four"])
+        assert matches == expected
 
-    def test_exempel_2():
-        assert fn("Python", "är", "kul") == "Python är kul\n"
+    def test_greppo_logic_example_linennumbers():
+        filenames = ["filnamn2"]
+        search_terms = ["o"]
+        matches = fn(search_terms, filenames, False, True)
+        expected = (
+            0,
+            ["filnamn2:1:boat", "filnamn2:4:helicopter", "filnamn2:5:rocket"],
+        )
+        assert matches == expected
 
-    def test_exempel_3():
-        assert fn("En", "två", "tre", sep=" - ") == "En - två - tre\n"
+    def test_greppo_logic_example_inverted_linennumbers():
+        filenames = ["filnamn1", "filnamn2"]
+        search_terms = ["e"]
+        matches = fn(search_terms, filenames, True, True)
+        expected = (
+            0,
+            ["filnamn1:2:two", "filnamn1:4:four", "filnamn2:1:boat", "filnamn2:2:car"],
+        )
+        assert matches == expected
 
-    def test_exempel_4():
-        assert fn("Slut", end=".") == "Slut."
+    def test_greppo_logic_no_match():
+        filenames = ["filnamn1"]
+        search_terms = ["six"]
+        matches = fn(search_terms, filenames, False, False)
+        assert matches == (1, [])
 
-    def test_exempel_5():
-        assert fn("Ett", "argument", sep="") == "Ettargument\n"
+    # Test cases for greppo.py
 
-    def test_exempel_6():
-        assert fn("Ensam") == "Ensam\n"
+    def test_script_example_two_search_strings():
+        output, exit_code = run_script("--search", "one", "--search", "two", "filnamn1")
+        expected_output = "filnamn1:one\nfilnamn1:two\n"
+        assert output == expected_output
+        assert exit_code == 0
+
+    def test_script_example_o_as_search_string():
+        output, exit_code = run_script("--search", "o", "filnamn1")
+        expected_output = "filnamn1:one\nfilnamn1:two\nfilnamn1:four\n"
+        assert output == expected_output
+        assert exit_code == 0
+
+    def test_script_example_linenumbers():
+        output, exit_code = run_script("--search", "o", "-n", "filnamn2")
+        expected_output = "filnamn2:1:boat\nfilnamn2:4:helicopter\nfilnamn2:5:rocket\n"
+        assert output == expected_output
+        assert exit_code == 0
+
+    def test_script_example_inverted_linenumbers():
+        output, exit_code = run_script(
+            "--search", "e", "-v", "-n", "filnamn1", "filnamn2"
+        )
+        expected_output = (
+            "filnamn1:2:two\nfilnamn1:4:four\nfilnamn2:1:boat\nfilnamn2:2:car\n"
+        )
+        assert output == expected_output
+        assert exit_code == 0
+
+    def test_script_no_match():
+        output, exit_code = run_script("--search", "six", "filnamn1")
+        expected_output = ""
+        assert output == expected_output
+        assert exit_code == 1
 
 except ImportDetailsError as e:
     pytest.fail(str(e))
