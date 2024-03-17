@@ -1,10 +1,7 @@
-# Todo - Error-handling - FIXED
-# Error states:
-# File not found.
-# Empty search_terms. Should no search_terms match nothing? Should the inversion of that match everything?
+# Empty search_terms. Should no search_terms match nothing? Should the inversion of that match everything? - FIXED
 # Todo - Lines with multiple matches repeat - FIXED
 
-# Extra - Color search_terms?
+# Extra - Color search_terms matches red. re replace match with {red}{match}{white}?
 # Extra - Relative filepaths? ~, ., ..?
 # Extra - -r flag for recursive filesearch?
 
@@ -15,6 +12,11 @@ def greppo_logic(
     search_terms, filenames, invert_match: bool, show_line_numbers: bool
 ) -> tuple:
     """Returns lines matching strings in search_terms."""
+
+    default = "\033[0m"
+    green = "\033[92m"
+    cyan = "\033[94m"
+    purple = "\033[95m"
 
     match_lines = list()
 
@@ -34,10 +36,8 @@ def greppo_logic(
 
         # This is not readable tbh.
         for index, line in enumerate(reader, start=1):
-            # The full formated string to append to match_lines.
-            full_line = (
-                f"{file}:{str(index) + ':' if show_line_numbers else ''}{line.strip()}"
-            )
+            # The full formated string to append to match_lines. - ANSI color codes prolly dont work on windows?
+            full_line = f"{purple}{file}{cyan}:{default}{green + str(index) + cyan + ':' + default if show_line_numbers else ''}{line.strip()}"
 
             # Flip keys to True if match is found.
             search_word_dict = {
