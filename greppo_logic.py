@@ -33,7 +33,7 @@ def greppo_logic(
             continue
 
         # This is not readable tbh.
-        for index, line in enumerate(reader):
+        for index, line in enumerate(reader, start=1):
             # The full formated string to append to match_lines.
             full_line = (
                 f"{file}:{str(index) + ':' if show_line_numbers else ''}{line.strip()}"
@@ -55,58 +55,9 @@ def greppo_logic(
                     match_lines.append(full_line)
 
     # Why would invert return a 1 on matches? Isnt exit-code "decoupled" from logic? A '1' signifies an error or no matches tbh.
-    if len(match_lines) == 0:
-        exit_code = 1
-    else:
-        exit_code = 0
-
-    return (exit_code, match_lines)
+    # Anything in any(match_lines) returns True, and int(True) == 1, since we want to return 0 on matches tho we can do "not any()" which reverses it.
+    return (int(not any(match_lines)), match_lines)
 
 
-def greppo_logic(search_terms, filenames, invert_match, show_linenumbers):
-    
-    matches = []
-    exit_code = 1
-
-
-    for file in filenames: # Loopar file genom filenames
-        if os.path.exists(file): # Kollar om filen finns (True or False)
-            with open(file, 'r') as content: # Öppnar filen som 'content'
-                
-                for index, line in enumerate(content, start=1): #Ger filen indexering som startar på 1
-                    
-                    line=line.strip() #För att listan matches inte ska få med end och whitespaces
-
-                    if search_terms:
-                        for search in search_terms:
-                            
-                            if invert_match: #Hantering vid inventering
-                                    if search not in line: #kollar om sökorden finns i raderna
-                                        if show_linenumbers: # Kollar om show_linenumbers är True
-                                            matches.append(f"{file}:{index}:{line}") 
-                                            exit_code = 0
-                                            
-                                        else:
-                                            matches.append(f"{file}:{line}")
-                                            exit_code = 0
-                                            
-
-                            else: #Hanterar sökningen i fallen där den inte ska inverteras. 
-                                if search in line:    
-
-                                    if show_linenumbers:
-
-                                        matches.append(f"{file}:{index}:{line}")
-                                        exit_code = 0
-
-                                    else: 
-                                        matches.append(f"{file}:{line}")
-                                        exit_code = 0
-                    
-                return matches, exit_code
-
-        else:
-            print("File does not exist")
-    
 if __name__ == "__main__":
     pass
