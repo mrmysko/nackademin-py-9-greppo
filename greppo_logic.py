@@ -3,6 +3,7 @@
 # Extra - -r flag for recursive filesearch?
 
 import re
+import os
 
 
 def greppo_logic(
@@ -22,10 +23,8 @@ def greppo_logic(
     match_lines = list()
 
     # Handles empty search_terms without raising an exception.
-    # This evaluates to True if search_terms is not empty...but is it more correct to do len(search_terms) >= 1 for more readability?
-    if search_terms:
-        pass
-    else:
+    # Needed to change this to len, a bool check would clear search_terms if "False" was a search_term.
+    if len(search_terms) < 1:
         search_terms = ""
 
     for file in filenames:
@@ -64,9 +63,11 @@ def greppo_logic(
     # Anything in any(match_lines) returns True, and int(True) == 1, since we want to return 0 on matches tho we can do "not any()" which reverses it.
     return (int(not any(match_lines)), match_lines)
 
-    def find_match(term, line):
-        pass
-        return False
+    # def find_match(term, line):
+    #    pass
+    #    return False
+
+    # match_lines = [full_line for index, line in enumerate(reader, start=1) for term in search_terms if find_match(term, line)]
 
 
 if __name__ == "__main__":
