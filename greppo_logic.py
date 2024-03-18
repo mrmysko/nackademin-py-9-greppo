@@ -37,26 +37,23 @@ def greppo_logic(
 
         # This is not readable tbh.
         for index, line in enumerate(reader, start=1):
-            # The full formated string to append to match_lines.
-            full_line = f"{PURPLE}{file}{CYAN}:{DEFAULT}{GREEN + str(index) + CYAN + ':' + DEFAULT if show_line_numbers else ''}{line.strip()}"
-
-            search_word_dict = dict()
-
-            for term in search_terms:
-
-            # Ok, so this works for coloring term, now where do I put it.....Needs access to the key.
-            # full_line = re.sub("for", f"{RED}for{DEFAULT}", line)
-            # print(full_line)
 
             # Flip keys to True if match is found.
             # Match only full words. "for" in "fortnite" == False
             if exact:
-                search_word_dict["key"] = {
+                search_word_dict = {
                     key: True for key in search_terms if re.search(rf"\b{key}\b", line)
                 }
+                for term in search_terms:
+                    line = re.sub(rf"\b{term}\b", f"{RED}{term}{DEFAULT}", line)
             # Match sub-strings. "for" in "fortnite" == True
             else:
                 search_word_dict = {key: True for key in search_terms if key in line}
+                for term in search_terms:
+                    line = re.sub(term, f"{RED}{term}{DEFAULT}", line)
+
+            # The full formated string to append to match_lines.
+            full_line = f"{PURPLE}{file}{CYAN}:{DEFAULT}{GREEN + str(index) + CYAN + ':' + DEFAULT if show_line_numbers else ''}{line.strip()}"
 
             if invert_match:
 
@@ -81,3 +78,10 @@ def greppo_logic(
 
 if __name__ == "__main__":
     pass
+
+
+# För varje line
+# För varje term
+# Kolla om term är i line.
+# Om TRUE - Färga term
+# Om invert - Kolla om term INTE är i line.
