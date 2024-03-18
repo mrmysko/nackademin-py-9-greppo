@@ -1,4 +1,3 @@
-# Extra - Color search_terms matches red. re replace match with {red}{match}{white}?
 # Extra - Relative filepaths? ~, ., ..?
 # Extra - -r flag for recursive filesearch?
 
@@ -78,10 +77,3 @@ def greppo_logic(
 
 if __name__ == "__main__":
     pass
-
-
-# För varje line
-# För varje term
-# Kolla om term är i line.
-# Om TRUE - Färga term
-# Om invert - Kolla om term INTE är i line.
