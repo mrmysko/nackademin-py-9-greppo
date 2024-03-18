@@ -1,4 +1,3 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/lNi1l-0e)
 # Uppgift 9 - Skapa CLI-verktyget "greppo" för textfiltrering
 
 # Syfte
@@ -182,6 +181,8 @@ för hela skriptet.
 - För att göra uppgiften enklare, dela upp den i två delar: hantera kommandon
   med `argparse` och utför sökningen i filerna. Lös dessa steg för sig och
   kombinera dem sedan.
+- Använd [sys.exit](https://docs.python.org/3/library/sys.html#sys.exit) för att
+  avsluta med en statuskod.
 
 # Inlämningsinstruktioner
 

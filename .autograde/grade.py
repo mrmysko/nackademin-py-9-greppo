@@ -1,5 +1,6 @@
 import subprocess
 import pytest  # noqa: F401
+import os
 
 fn_name = "greppo_logic"
 
@@ -11,7 +12,15 @@ class ImportDetailsError(Exception):
 def run_script(*args):
     cmd = ["python", "greppo.py"] + list(args)
     result = subprocess.run(cmd, text=True, capture_output=True)
+
+    if result.stdout:
+        result.stdout = result.stdout.replace(tst_file(""), "")
+
     return result.stdout, result.returncode
+
+
+def tst_file(file_name):
+    return os.path.join(".autograde", file_name)
 
 
 try:
@@ -70,26 +79,28 @@ try:
     # Test cases for greppo.py
 
     def test_script_example_two_search_strings():
-        output, exit_code = run_script("--search", "one", "--search", "two", "filnamn1")
+        output, exit_code = run_script(
+            "--search", "one", "--search", "two", tst_file("filnamn1")
+        )
         expected_output = "filnamn1:one\nfilnamn1:two\n"
         assert output == expected_output
         assert exit_code == 0
 
     def test_script_example_o_as_search_string():
-        output, exit_code = run_script("--search", "o", "filnamn1")
+        output, exit_code = run_script("--search", "o", tst_file("filnamn1"))
         expected_output = "filnamn1:one\nfilnamn1:two\nfilnamn1:four\n"
         assert output == expected_output
         assert exit_code == 0
 
     def test_script_example_linenumbers():
-        output, exit_code = run_script("--search", "o", "-n", "filnamn2")
+        output, exit_code = run_script("--search", "o", "-n", tst_file("filnamn2"))
         expected_output = "filnamn2:1:boat\nfilnamn2:4:helicopter\nfilnamn2:5:rocket\n"
         assert output == expected_output
         assert exit_code == 0
 
     def test_script_example_inverted_linenumbers():
         output, exit_code = run_script(
-            "--search", "e", "-v", "-n", "filnamn1", "filnamn2"
+            "--search", "e", "-v", "-n", tst_file("filnamn1"), tst_file("filnamn2")
         )
         expected_output = (
             "filnamn1:2:two\nfilnamn1:4:four\nfilnamn2:1:boat\nfilnamn2:2:car\n"
@@ -98,7 +109,7 @@ try:
         assert exit_code == 0
 
     def test_script_no_match():
-        output, exit_code = run_script("--search", "six", "filnamn1")
+        output, exit_code = run_script("--search", "six", tst_file("filnamn1"))
         expected_output = ""
         assert output == expected_output
         assert exit_code == 1
