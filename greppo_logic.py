@@ -60,9 +60,8 @@ def greppo_logic(
                 if not any(search_word_dict.values()) and len(line) > 1:
                     match_lines.append(full_line)
 
-            else:
-                if any(search_word_dict.values()):
-                    match_lines.append(full_line)
+            elif any(search_word_dict.values()):
+                match_lines.append(full_line)
 
     # Why would invert return a 1 on matches? Isnt exit-code "decoupled" from logic? A '1' signifies an error or no matches tbh.
     # Anything in any(match_lines) returns True, and int(True) == 1, since we want to return 0 on matches tho we can do "not any()" which reverses it.
