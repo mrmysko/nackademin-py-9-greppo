@@ -14,9 +14,14 @@ def main():
         prog="greppo.py", description="A python implementation of grep -Hv"
     )
     parser.add_argument("files", nargs="+", help="Space-separated filenames.")
-    parser.add_argument("--search", action="append", help="string to search for.")
+    parser.add_argument(
+        "--search", action="append", help="string to search for.", required=True
+    )
     parser.add_argument(
         "-n", "--line-number", help="show line-numbers.", action="store_true"
+    )
+    parser.add_argument(
+        "-r", "--recursive", help="search recursively", action="store_true"
     )
     parser.add_argument(
         "-v", "--invert-match", help="invert selection.", action="store_true"
