@@ -23,8 +23,8 @@ def greppo_logic(
     match_lines = list()
 
     # Handles empty search_terms without raising an exception.
-    # Needed to change this to len, a bool check would clear search_terms if "False" was a search_term.
-    if len(search_terms) < 1:
+    # Needed to change this, a bool check would clear search_terms if "False" was a search_term.
+    if search_terms == None:
         search_terms = ""
 
     for file in filenames:
@@ -34,7 +34,6 @@ def greppo_logic(
         except FileNotFoundError:
             continue
 
-        # This is not readable tbh.
         for index, line in enumerate(reader, start=1):
 
             # Flip keys to True if match is found.
@@ -66,12 +65,6 @@ def greppo_logic(
     # Why would invert return a 1 on matches? Isnt exit-code "decoupled" from logic? A '1' signifies an error or no matches tbh.
     # Anything in any(match_lines) returns True, and int(True) == 1, since we want to return 0 on matches tho we can do "not any()" which reverses it.
     return (int(not any(match_lines)), match_lines)
-
-    # def find_match(term, line):
-    #    pass
-    #    return False
-
-    # match_lines = [full_line for index, line in enumerate(reader, start=1) for term in search_terms if find_match(term, line)]
 
 
 if __name__ == "__main__":
