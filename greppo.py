@@ -27,6 +27,7 @@ def main():
         "-v", "--invert-match", help="invert selection.", action="store_true"
     )
     parser.add_argument("-w", "--exact", help="exact match", action="store_true")
+    parser.add_argument("-q", "--quiet", help="supress output", action="store_true")
     # parser.add_argument("-q", "--quiet", "--silent", help="Only show exit-code.")
 
     args = parser.parse_args()
@@ -40,11 +41,14 @@ def main():
         args.recursive,
     )
 
-    if matches[0] != 0:
-        print("No matches found.")
+    if not args.quiet:
+        if matches[0] != 0:
+            print("No matches found.")
+        else:
+            for i in matches[1]:
+                print(i)
     else:
-        for i in matches[1]:
-            print(i)
+        print(matches[0])
 
 
 if __name__ == "__main__":
