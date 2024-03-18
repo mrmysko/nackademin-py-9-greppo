@@ -3,6 +3,14 @@
 
 # Bug - --search "" and --search . produces some weird results.
 
+# Ok, buggen med "" är att "" matchar en tom rad, och sen byts den ut till...en annan tom rad?
+# Den orginella tomma raden här 0 bytes, men "" raden är 23 bytes.
+# Så, den matchar ok, men kan man ha en dict med nyckeln ""?
+# If-satsen under lägger till alla rader för att any() blir true i varje loop.
+
+# Punkt-buggen - I rader med . matchar . alla karaktärer på nått sätt och byter ut allt till .
+# Men hur? \b.\b borde vara 1 char-wordbound?
+
 import re
 import os
 
@@ -42,13 +50,15 @@ def greppo_logic(
                 if exact:
                     if re.search(rf"\b{term}\b", line):
                         search_word_dict[term] = True
-                        line = re.sub(rf"\b{term}\b", f"{RED}{term}{DEFAULT}", line)
+                        line = re.sub(
+                            rf"\b{term}\b", f"{RED}{term}{DEFAULT}", line.strip()
+                        )
 
                 # Match sub-strings. "for" in "fortnite" == True
                 else:
                     if term in line:
                         search_word_dict[term] = True
-                        line = re.sub(term, f"{RED}{term}{DEFAULT}", line)
+                        line = re.sub(term, f"{RED}{term}{DEFAULT}", line.strip())
 
             # This code loops over search terms twice, once for dict and once more for regex substitution.
             # if exact:
@@ -75,7 +85,6 @@ def greppo_logic(
             elif any(search_word_dict.values()):
                 match_lines.append(full_line)
 
-    # Why would invert return a 1 on matches? Isnt exit-code "decoupled" from logic? A '1' signifies an error or no matches tbh.
     # Anything in any(match_lines) returns True, and int(True) == 1, since we want to return 0 on matches tho we can do "not any()" which reverses it.
     return (int(not any(match_lines)), match_lines)
 
