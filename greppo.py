@@ -32,7 +32,12 @@ def main():
     args = parser.parse_args()
 
     matches = greppo_logic(
-        args.search, args.files, args.invert_match, args.line_number, args.exact
+        args.search,
+        args.files,
+        args.invert_match,
+        args.line_number,
+        args.exact,
+        args.recursive,
     )
 
     if matches[0] != 0:

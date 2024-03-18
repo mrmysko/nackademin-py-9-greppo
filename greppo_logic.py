@@ -8,11 +8,12 @@ import os
 
 
 def greppo_logic(
-    search_terms,
-    filenames,
+    search_terms: list,
+    filenames: list,
     invert_match: bool,
     show_line_numbers: bool,
     exact: bool,
+    recursive: bool,
 ) -> tuple:
     """Returns lines matching strings in search_terms."""
 
