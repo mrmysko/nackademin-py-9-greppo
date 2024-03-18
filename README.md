@@ -181,6 +181,8 @@ för hela skriptet.
 - För att göra uppgiften enklare, dela upp den i två delar: hantera kommandon
   med `argparse` och utför sökningen i filerna. Lös dessa steg för sig och
   kombinera dem sedan.
+- Använd [sys.exit](https://docs.python.org/3/library/sys.html#sys.exit) för att
+  avsluta med en statuskod.
 
 # Inlämningsinstruktioner
 
