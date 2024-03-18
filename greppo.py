@@ -3,6 +3,7 @@
 # Skriv endast definitioner här på denna indenteringsnivå! Det är viktigt att du
 # namnger funktioner, klasser och variabler exakt med de namn som står i
 # beskrivningen.
+import sys
 import argparse
 from greppo_logic import greppo_logic
 
@@ -27,7 +28,9 @@ def main():
         "-v", "--invert-match", help="invert selection.", action="store_true"
     )
     parser.add_argument("-w", "--exact", help="exact match", action="store_true")
-    parser.add_argument("-q", "--quiet", help="supress output", action="store_true")
+    parser.add_argument(
+        "-q", "--quiet", "--silent", help="supress output", action="store_true"
+    )
     # parser.add_argument("-q", "--quiet", "--silent", help="Only show exit-code.")
 
     args = parser.parse_args()
@@ -47,8 +50,8 @@ def main():
         else:
             for i in matches[1]:
                 print(i)
-    else:
-        print(matches[0])
+        sys.exit(matches[0])
+    sys.exit(matches[0])
 
 
 if __name__ == "__main__":
