@@ -8,10 +8,12 @@ not a line with for, oops
 fofo
 banan
 
+.
 foor
 Här finns ett for.
 
 "For"
 This a line.
 Här är en banan typ
+Test-sträng
 False
