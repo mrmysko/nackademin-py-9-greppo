@@ -4,7 +4,7 @@
 # Bug - --search "" and --search . produces some weird results.
 
 # Ok, buggen med "" är att "" matchar en tom rad, och sen byts den ut till...en annan tom rad?
-# Den orginella tomma raden här 0 bytes, men "" raden är 23 bytes.
+# Den orginella tomma raden är 0 bytes, men "" raden är 23 bytes.
 # Så, den matchar ok, men kan man ha en dict med nyckeln ""?
 # If-satsen under lägger till alla rader för att any() blir true i varje loop.
 
@@ -33,6 +33,8 @@ def greppo_logic(
 
     match_lines = list()
 
+    print(search_terms)
+
     for file in filenames:
         try:
             with open(file, "r", encoding="utf-8") as fp:
@@ -43,22 +45,33 @@ def greppo_logic(
         for index, line in enumerate(reader, start=1):
 
             search_word_dict = dict()
+            line = line.strip()
 
-            # Flip keys to True if match is found.
-            # Match only full words. "for" in "fortnite" == False
             for term in search_terms:
+                match_pattern = rf"\b{term}\b"
+
+                # Special in case the term is a dot.
+                match term:
+                    case ".":
+                        match_pattern = rf"\b\{term}\b"
+                    case _:
+                        pass
+
+                line = re.sub(match_pattern, f"{RED}{term}{DEFAULT}", line)
+
+                # Flip keys to True if match is found.
+                # Match only full words. "for" in "fortnite" == False
                 if exact:
-                    if re.search(rf"\b{term}\b", line):
+                    if re.search(match_pattern, line):
                         search_word_dict[term] = True
-                        line = re.sub(
-                            rf"\b{term}\b", f"{RED}{term}{DEFAULT}", line.strip()
-                        )
 
                 # Match sub-strings. "for" in "fortnite" == True
                 else:
                     if term in line:
                         search_word_dict[term] = True
-                        line = re.sub(term, f"{RED}{term}{DEFAULT}", line.strip())
+
+            for i in search_word_dict.keys():
+                print(f'"{i}"')
 
             # This code loops over search terms twice, once for dict and once more for regex substitution.
             # if exact:
@@ -79,7 +92,7 @@ def greppo_logic(
             if invert_match:
 
                 # Returns False if any value in search_word_dict is True.
-                if not any(search_word_dict.values()) and len(line.strip()) > 1:
+                if not any(search_word_dict.values()) and len(line) > 1:
                     match_lines.append(full_line)
 
             elif any(search_word_dict.values()):
