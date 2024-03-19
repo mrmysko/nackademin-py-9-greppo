@@ -8,8 +8,11 @@
 # Så, den matchar ok, men kan man ha en dict med nyckeln ""?
 # If-satsen under lägger till alla rader för att any() blir true i varje loop.
 
-# Punkt-buggen - I rader med . matchar . alla karaktärer på nått sätt och byter ut allt till .
-# Men hur? \b.\b borde vara 1 char-wordbound?
+"""Punkt-buggen - I rader med punkt matchar . alla karaktärer på nått sätt och byter ut allt till .
+    Men hur? \b.\b borde vara 1 char-wordbound?
+    Ger upp på det här, ett match pattern på f'\b\.\b' hade matchat bara en punkt, men då förstörs andra saker.
+    Blir för mycket conditionals så tillåter inte en punkt som sökterm itället.
+    Grep hanterar en punkt som en char och matchar allt, verkar dumt tbh."""
 
 import re
 import os
@@ -31,9 +34,10 @@ def greppo_logic(
     CYAN = "\033[94m"
     PURPLE = "\033[95m"
 
-    match_lines = list()
+    # Special case, dont allow a dot as search term.
+    [search_terms.remove(term) for term in search_terms if term == "."]
 
-    print(search_terms)
+    match_lines = list()
 
     for file in filenames:
         try:
@@ -48,30 +52,19 @@ def greppo_logic(
             line = line.strip()
 
             for term in search_terms:
-                match_pattern = rf"\b{term}\b"
-
-                # Special in case the term is a dot.
-                match term:
-                    case ".":
-                        match_pattern = rf"\b\{term}\b"
-                    case _:
-                        pass
-
-                line = re.sub(match_pattern, f"{RED}{term}{DEFAULT}", line)
 
                 # Flip keys to True if match is found.
                 # Match only full words. "for" in "fortnite" == False
                 if exact:
-                    if re.search(match_pattern, line):
+                    if re.search(rf"\b{term}\b", line):
                         search_word_dict[term] = True
+                        line = re.sub(rf"\b{term}\b", f"{RED}{term}{DEFAULT}", line)
 
                 # Match sub-strings. "for" in "fortnite" == True
                 else:
                     if term in line:
                         search_word_dict[term] = True
-
-            for i in search_word_dict.keys():
-                print(f'"{i}"')
+                        line = re.sub(term, f"{RED}{term}{DEFAULT}", line)
 
             # This code loops over search terms twice, once for dict and once more for regex substitution.
             # if exact:

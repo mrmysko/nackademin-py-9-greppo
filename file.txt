@@ -8,6 +8,7 @@ not a line with for, oops
 fofo
 banan
 
+.
 foor
 Här finns ett for.
 
