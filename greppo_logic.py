@@ -7,12 +7,13 @@
 # Den orginella tomma raden är 0 bytes, men "" raden är 23 bytes.
 # Så, den matchar ok, men kan man ha en dict med nyckeln ""?
 # If-satsen under lägger till alla rader för att any() blir true i varje loop.
+"""Jag vet inte om det här ens är en bug...grep verkar fungera likadant, om man skickar in "" som söksträng så får man ut alla rader."""
 
-"""Punkt-buggen - I rader med punkt matchar . alla karaktärer på nått sätt och byter ut allt till .
-    Men hur? \b.\b borde vara 1 char-wordbound?
-    Ger upp på det här, ett match pattern på f'\b\.\b' hade matchat bara en punkt, men då förstörs andra saker.
-    Blir för mycket conditionals så tillåter inte en punkt som sökterm itället.
-    Grep hanterar en punkt som en char och matchar allt, verkar dumt tbh."""
+# Punkt-buggen - I rader med punkt matchar . alla karaktärer på nått sätt och byter ut allt till .
+# Men hur? \b.\b borde vara 1 char-wordbound?
+"""Ger upp på det här, ett match pattern på f'\b\.\b' hade matchat bara en punkt, men då förstörs andra saker.
+Blir för mycket conditionals så tillåter inte en punkt som sökterm itället.
+Grep hanterar en punkt som en char och matchar allt, verkar dumt tbh."""
 
 import re
 import os
