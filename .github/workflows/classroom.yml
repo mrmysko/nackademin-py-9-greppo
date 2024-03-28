@@ -16,11 +16,8 @@ jobs:
       uses: actions/checkout@v4
     - name: check
       id: check
-      uses: education/autograding-command-grader@v1
+      uses: education/autograding-python-grader@v1
       with:
-        test-name: check
-        setup-command: sudo -H pip3 install pytest
-        command: pytest .autograde/grade.py
         timeout: 10
     - name: Autograding Reporter
       uses: education/autograding-grading-reporter@v1
